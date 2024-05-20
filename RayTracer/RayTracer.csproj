@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>7.10.3077</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8BBEC331-F4AB-4874-A80F-C458ADAF8ED3}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+    <AssemblyKeyContainerName />
+    <AssemblyName>RayTracer</AssemblyName>
+    <AssemblyOriginatorKeyFile />
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>RayTracer</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>0.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile />
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile />
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn />
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile />
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile />
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn />
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CAMERA_BasicCamera.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CAMERA_PinHole.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LIGHT_Ambient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LIGHT_BasicLight.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LIGHT_Directional.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LIGHT_Point.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MAPPING_BasicMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MAPPING_Cylindrical.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MAPPING_Rectangular.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MAPPING_Spherical.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_BasicMaterial.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_Matt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_Phong.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_Reflective.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_TEXTURED_Phong.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_TEXTURED_Reflective.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_TEXTURED_Transparent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MATERIAL_Transparent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NOISE_CubicNoiseSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NOISE_LinearNoiseSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NOISE_NoiseSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_ACCELERATED_Grid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_ACCELERATED_Triangle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_AxisAlignedBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_BasicObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_Compound.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_Disc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_GENERIC_Cube.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_GENERIC_Plane.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_GENERIC_Sphere.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_GENERIC_Torus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_Instance.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_OpenCylinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_Plane.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_Sphere.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBJECT_Triangle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ray.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shading.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_BasicTexture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_CheckerBoard.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_CubicNoise.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_fBm.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_fBmWrap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_FractalSum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_Image.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_Instance.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_LinearNoise.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_Marble.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_Marble_Procedural.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_PureColour.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TEXTURE_Turbulence.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_Matrix3D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_Normal3D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_Point2D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_Point3D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_RGBColour.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_VariousMath.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTILITY_Vector3D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Viewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewPlane.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="World.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="App.ico" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viewer.resx">
+      <DependentUpon>Viewer.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent />
+    <PostBuildEvent />
+  </PropertyGroup>
+</Project>
