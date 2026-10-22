@@ -43,7 +43,7 @@ public class GeometryAndBvhTests
     {
         Scene scene = new();
         var material = new Material(Vector3.One);
-        scene.Objects.Add(new Plane(new Vector3(0, -2, 0), Vector3.UnitY, material));
+        scene.Objects.Add(new SharpRay.Core.Plane(new Vector3(0, -2, 0), Vector3.UnitY, material));
         for (int i = 0; i < 35; i++)
             scene.Objects.Add(new Sphere(new Vector3((i % 7) - 3, (i / 7) * 0.7f, -4 - i * 0.8f),
                 0.32f, material));
