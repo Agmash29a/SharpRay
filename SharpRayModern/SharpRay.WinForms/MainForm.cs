@@ -101,6 +101,14 @@ public sealed class MainForm : Form
             Padding = new Padding(15)
         });
         editorTabs.TabPages.Add(cameraTab);
+        var worldTab = new TabPage("World");
+        worldTab.Controls.Add(new Label
+        {
+            Dock = DockStyle.Fill,
+            Text = "Configure ambient light, sky and recursion depth below.",
+            Padding = new Padding(15)
+        });
+        editorTabs.TabPages.Add(worldTab);
         editorTabs.SelectedIndexChanged += (_, _) => SetInspectorSelection();
         objects.SelectedIndexChanged += (_, _) => SetInspectorSelection();
         lights.SelectedIndexChanged += (_, _) => SetInspectorSelection();
@@ -271,6 +279,7 @@ public sealed class MainForm : Form
             0 => objects.SelectedItem,
             1 => lights.SelectedItem,
             2 => document.Camera,
+            3 => document,
             _ => null
         };
     }
@@ -330,7 +339,8 @@ public sealed class MainForm : Form
         {
             (Scene scene, Camera camera) = document.Build();
             var options = new RenderOptions((int)widthInput.Value,
-                (int)heightInput.Value, (int)samplesInput.Value);
+                (int)heightInput.Value, (int)samplesInput.Value,
+                Math.Clamp(document.MaxBounces, 0, 24));
             var progress = new Progress<int>(p => status.Text = $"Rendering {p}%");
             int[] pixels = await new Renderer().RenderAsync(scene, camera, options, progress, cancellation.Token);
             using Bitmap bitmap = new(options.Width, options.Height, PixelFormat.Format32bppArgb);
