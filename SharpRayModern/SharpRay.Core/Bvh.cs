@@ -102,6 +102,7 @@ public sealed class CompiledScene
     public IReadOnlyList<PointLight> Lights { get; }
     public IReadOnlyList<DirectionalLight> DirectionalLights { get; }
     public float AmbientIntensity { get; }
+    public Vector3 AmbientColour { get; }
     public Vector3 SkyColour { get; }
 
     public CompiledScene(Scene scene)
@@ -113,6 +114,7 @@ public sealed class CompiledScene
         Lights = Array.AsReadOnly(scene.Lights.ToArray());
         DirectionalLights = Array.AsReadOnly(scene.DirectionalLights.ToArray());
         AmbientIntensity = Math.Clamp(scene.AmbientIntensity, 0f, 1f);
+        AmbientColour = Vector3.Clamp(scene.AmbientColour, Vector3.Zero, Vector3.One);
         SkyColour = scene.SkyColour;
     }
 
