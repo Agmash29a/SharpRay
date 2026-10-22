@@ -75,7 +75,7 @@ public sealed class SceneDocumentTests
         var shape = new EditableShape { Name = "Sphere", Shape = ShapeKind.Sphere, Radius = 1, X = 3 };
         var doc = new SceneDocument();
         doc.Objects.Add(shape);
-        (Scene scene, _) = doc.Build();
+        var (scene, _) = doc.Build();
         Assert.True(scene.TryHit(new Ray(new Vector3(3, 0, 5), -Vector3.UnitZ),
             0.001f, 20, out _));
         shape.X = -3;
