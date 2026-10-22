@@ -117,8 +117,12 @@ public sealed record Torus(Vector3 Centre, float MajorRadius, float MinorRadius,
         ];
         if (!BoundingBox.TryInterval(ray, minT, maxT, out float near, out float far)) return false;
         double closest = double.PositiveInfinity;
+        // Quartic roots can lie a few ulps outside the float AABB boundary.
+        // Keep the box conservative and validate the actual ray limits separately.
+        double tolerance = 1e-4 * Math.Max(1d, Math.Max(Math.Abs(near), Math.Abs(far)));
         foreach (double t in PolynomialRoots.RealRoots(c))
-            if (t >= Math.Max(minT, near) && t <= Math.Min(maxT, far) && t < closest)
+            if (t >= minT && t <= maxT &&
+                t >= near - tolerance && t <= far + tolerance && t < closest)
                 closest = t;
         if (!double.IsFinite(closest)) return false;
         float distance = (float)closest;
