@@ -79,8 +79,9 @@ internal sealed class BvhNode
 
         // Visit nearer child first, allowing the other side to be pruned with a tighter limit.
         BvhNode? first = left, second = right;
-        bool leftValid = first is not null && first.Box.TryInterval(ray, minT, maxT, out float leftNear, out _);
-        bool rightValid = second is not null && second.Box.TryInterval(ray, minT, maxT, out float rightNear, out _);
+        float leftNear = 0, rightNear = 0;
+        bool leftValid = first is not null && first.Box.TryInterval(ray, minT, maxT, out leftNear, out _);
+        bool rightValid = second is not null && second.Box.TryInterval(ray, minT, maxT, out rightNear, out _);
         if (leftValid && rightValid && rightNear < leftNear)
             (first, second) = (second, first);
         bool foundFirst = first is not null && first.TryHit(ray, minT, maxT, out closest);
@@ -113,8 +114,8 @@ public sealed class CompiledScene
 
     public bool TryHit(in Ray ray, float minT, float maxT, out Hit closest)
     {
+        closest = default;
         bool found = bounded is not null && bounded.TryHit(ray, minT, maxT, out closest);
-        if (!found) closest = default;
         if (found) maxT = closest.Distance;
         foreach (ISceneObject obj in unbounded)
         {
