@@ -109,7 +109,8 @@ public sealed class SceneViewport : PictureBox
                 if (!AxisEndpoints(i, out PointF a, out PointF b)) continue;
                 float length = (new Vector2(b.X - a.X, b.Y - a.Y)).Length();
                 if (length < 12f) continue; // axis approximately parallel to the camera
-                float distance = DistanceToSegment(e.Location, a, b);
+                float distance = GizmoMath.DistanceToAxis(new Vector2(e.X, e.Y),
+                    new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
                 if (distance < smallest) { smallest = distance; nearest = i; }
             }
         }
@@ -159,10 +160,9 @@ public sealed class SceneViewport : PictureBox
     {
         base.OnMouseMove(e);
         if (dragAxis < 0 || Selection is null) return;
-        Vector2 axisScreen = new(axisEnd.X - axisBegin.X, axisEnd.Y - axisBegin.Y);
-        Vector2 delta = new(e.X - mouseAnchor.X, e.Y - mouseAnchor.Y);
-        float amount = Vector2.Dot(delta, axisScreen) /
-                       Math.Max(axisScreen.LengthSquared(), 0.001f);
+        float amount = GizmoMath.AxisDisplacement(new Vector2(axisBegin.X, axisBegin.Y),
+            new Vector2(axisEnd.X, axisEnd.Y), new Vector2(mouseAnchor.X, mouseAnchor.Y),
+            new Vector2(e.X, e.Y));
         Selection.X = objectAnchor.X + (dragAxis == 0 ? amount : 0);
         Selection.Y = objectAnchor.Y + (dragAxis == 1 ? amount : 0);
         Selection.Z = objectAnchor.Z + (dragAxis == 2 ? amount : 0);
