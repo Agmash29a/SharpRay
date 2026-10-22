@@ -110,6 +110,6 @@ public static partial class MeshImporter
                 if (triangles.Count > MaxTriangles) throw new InvalidDataException("Mesh too large.");
             }
         }
-        return new Compound(triangles);
+        return triangles;
     }
 }
