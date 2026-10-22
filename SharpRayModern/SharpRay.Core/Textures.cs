@@ -27,7 +27,7 @@ public sealed record CheckerTexture(Vector3 A, Vector3 B, float Frequency = 1) :
     }
 }
 
-public enum TextureProjection { UV, Planar, Cylindrical, Spherical }
+public enum TextureProjection { UV, Planar, Cylindrical, Spherical, RectangularLegacy, CylindricalLegacy, SphericalLegacy }
 
 /// <summary>
 /// Immutable nearest-neighbour bitmap texture. BMP reader supports uncompressed 24/32-bit
@@ -60,6 +60,12 @@ public sealed class ImageTexture : ITexture
                 0.5f + MathF.Atan2(context.LocalPoint.Z, context.LocalPoint.X) / (2 * MathF.PI),
                 context.LocalPoint.Y),
             TextureProjection.Spherical => Spherical(context.LocalPoint),
+            TextureProjection.RectangularLegacy => new((context.LocalPoint.Z + 1) * 0.5f,
+                (context.LocalPoint.X + 1) * 0.5f),
+            TextureProjection.CylindricalLegacy => new(
+                (MathF.Atan2(context.LocalPoint.X, context.LocalPoint.Z) / (2 * MathF.PI) + 1) % 1,
+                (context.LocalPoint.Y + 1) * 0.5f),
+            TextureProjection.SphericalLegacy => LegacySpherical(context.LocalPoint),
             _ => context.UV
         };
         static float Wrap(float f) => f - MathF.Floor(f);
@@ -74,6 +80,16 @@ public sealed class ImageTexture : ITexture
         Vector3 n = Vector3.Normalize(point);
         return new Vector2(0.5f + MathF.Atan2(n.Z, n.X) / (2 * MathF.PI),
             0.5f - MathF.Asin(Math.Clamp(n.Y, -1, 1)) / MathF.PI);
+    }
+
+    private static Vector2 LegacySpherical(Vector3 point)
+    {
+        if (point.LengthSquared() < 1e-12f) return Vector2.Zero;
+        Vector3 n = Vector3.Normalize(point);
+        float phi = MathF.Atan2(n.Y, n.X);
+        float u = phi >= 0 ? phi / (2 * MathF.PI) : 1 + phi / (2 * MathF.PI);
+        float v = 1 - MathF.Acos(Math.Clamp(n.Z, -1, 1)) / MathF.PI;
+        return new Vector2(u, v);
     }
 
     public static ImageTexture FromBmp(string path, TextureProjection projection = TextureProjection.UV)
