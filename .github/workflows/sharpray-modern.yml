@@ -28,3 +28,5 @@ jobs:
         run: dotnet build SharpRayModern/SharpRay.WinForms/SharpRay.WinForms.csproj --configuration Release
       - name: Run unit tests
         run: dotnet test SharpRayModern/SharpRay.Tests/SharpRay.Tests.csproj --configuration Release
+      - name: Test interactive editor and legacy presets
+        run: dotnet test SharpRayModern/SharpRay.SceneTests/SharpRay.SceneTests.csproj --configuration Release
