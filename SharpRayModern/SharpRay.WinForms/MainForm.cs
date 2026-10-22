@@ -59,12 +59,14 @@ public sealed class MainForm : Form
         var split = new SplitContainer
         {
             Dock = DockStyle.Fill, Orientation = Orientation.Vertical,
+            Size = new Size(1200, 680),
             SplitterWidth = 6, SplitterDistance = 380,
             Panel1MinSize = 290, Panel2MinSize = 300
         };
         var editorSplit = new SplitContainer
         {
             Dock = DockStyle.Fill, Orientation = Orientation.Horizontal,
+            Size = new Size(380, 680),
             SplitterDistance = 360, Panel1MinSize = 180, Panel2MinSize = 160
         };
 
