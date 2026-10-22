@@ -165,6 +165,18 @@ public sealed class MainForm : Form
         };
         buttons.Controls.Add(remove);
         buttons.Controls.Add(bitmap);
+        var mesh = new Button { Text = "Choose mesh...", AutoSize = true };
+        mesh.Click += (_, _) =>
+        {
+            if (objects.SelectedItem is not EditableShape shape) return;
+            using OpenFileDialog dialog = new() { Filter = "Triangle mesh|*.ply;*.txt|All files|*.*" };
+            if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            shape.MeshPath = dialog.FileName;
+            shape.Shape = ShapeKind.Mesh;
+            inspector.Refresh();
+            objects.Refresh();
+        };
+        buttons.Controls.Add(mesh);
         layout.Controls.Add(objects, 0, 0);
         layout.Controls.Add(buttons, 0, 1);
         page.Controls.Add(layout);
