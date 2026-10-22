@@ -31,6 +31,19 @@ public sealed class Camera
         up = Vector3.Normalize(Vector3.Cross(right, forward));
         scale = MathF.Tan(verticalFieldOfView * MathF.PI / 360f);
     }
+    /// <summary>World position to normalized viewport coordinates, matching GetRay.</summary>
+    public bool TryProject(Vector3 world, float aspect, out Vector2 uv)
+    {
+        Vector3 offset = world - position;
+        float depth = Vector3.Dot(offset, forward);
+        uv = default;
+        if (depth <= 0.0001f || aspect <= 0) return false;
+        float x = Vector3.Dot(offset, right) / (depth * aspect * scale);
+        float y = Vector3.Dot(offset, up) / (depth * scale);
+        uv = new Vector2((1 + x) * 0.5f, (1 - y) * 0.5f);
+        return float.IsFinite(uv.X) && float.IsFinite(uv.Y);
+    }
+
     public Ray GetRay(float u, float v, float aspect)
     {
         Vector3 direction = forward + right * ((2 * u - 1) * aspect * scale) + up * ((1 - 2 * v) * scale);
