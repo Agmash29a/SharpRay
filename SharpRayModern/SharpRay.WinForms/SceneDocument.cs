@@ -7,7 +7,7 @@ using SharpRay.Core;
 namespace SharpRay.WinForms;
 
 public enum ShapeKind { Sphere, Plane, Box, Triangle, Disc, Cylinder, Torus, Mesh }
-public enum TextureKind { Solid, Checker, Noise, FBm, Turbulence, Marble, Bitmap }
+public enum TextureKind { Solid, Checker, Noise, FBm, Turbulence, Marble, Bitmap, FbmWrap, FractalSum, MarbleRamp }
 
 public sealed class EditableShape
 {
@@ -42,6 +42,12 @@ public sealed class EditableShape
     [Category("Texture")] public NoiseInterpolation Interpolation { get; set; } = NoiseInterpolation.Cubic;
     [Category("Texture")] public TextureProjection Projection { get; set; } = TextureProjection.UV;
     [Category("Texture")] public string BitmapPath { get; set; } = "";
+    [Category("Texture")] public bool TransformTexture { get; set; }
+    [Category("Texture")] public float TextureOffsetX { get; set; }
+    [Category("Texture")] public float TextureOffsetY { get; set; }
+    [Category("Texture")] public float TextureOffsetZ { get; set; }
+    [Category("Texture")] public float TextureScale { get; set; } = 1;
+    [Category("Texture")] public float TextureRotationY { get; set; }
 
     public override string ToString() => $"{Name} ({Shape})";
 
@@ -65,9 +71,21 @@ public sealed class EditableShape
                 Frequency, Octaves, Interpolation: Interpolation),
             TextureKind.Bitmap when !string.IsNullOrWhiteSpace(BitmapPath) =>
                 ImageTexture.FromBmp(BitmapPath, Projection),
+            TextureKind.MarbleRamp when !string.IsNullOrWhiteSpace(BitmapPath) =>
+                new MarbleRampTexture(ImageTexture.FromBmp(BitmapPath), Frequency, Octaves: Octaves),
+            TextureKind.MarbleRamp => throw new InvalidOperationException($"Select a BMP ramp for '{Name}'."),
+            TextureKind.FbmWrap => new FbmWrapTexture(primary, accent, Frequency, Octaves),
+            TextureKind.FractalSum => new FractalSumTexture(primary, accent, Frequency, Octaves),
             TextureKind.Bitmap => throw new InvalidOperationException($"Select a BMP file for '{Name}'."),
             _ => null
         };
+        if (texture is not null && TransformTexture)
+        {
+            Matrix4x4 textureMatrix = Matrix4x4.CreateScale(MathF.Max(0.001f, MathF.Abs(TextureScale))) *
+                Matrix4x4.CreateRotationY(TextureRotationY * MathF.PI / 180f) *
+                Matrix4x4.CreateTranslation(TextureOffsetX, TextureOffsetY, TextureOffsetZ);
+            texture = new TextureInstance(texture, textureMatrix);
+        }
         Material material = new(primary, Math.Clamp(Reflectivity, 0, 1),
             Math.Clamp(Shininess, 1, 500), texture, Math.Clamp(Transparency, 0, 1),
             Math.Clamp(RefractiveIndex, 1.001f, 4));
@@ -107,6 +125,7 @@ public sealed class EditableLight
     public float Y { get; set; } = 7;
     public float Z { get; set; } = 5;
     public string Colour { get; set; } = "#FFFFFF";
+    public bool Directional { get; set; }
     public float Power { get; set; } = 1.5f;
     public override string ToString() => Name;
     internal PointLight ToLight() => new(new Vector3(X, Y, Z),
@@ -167,7 +186,12 @@ public sealed class SceneDocument
         foreach (EditableShape obj in Objects)
             scene.Objects.Add(obj.ToGeometry());
         foreach (EditableLight light in Lights)
-            scene.Lights.Add(light.ToLight());
+        {
+            if (light.Directional)
+                scene.DirectionalLights.Add(new DirectionalLight(
+                    new Vector3(light.X, light.Y, light.Z), ParseColour(light.Colour), MathF.Max(0, light.Power)));
+            else scene.Lights.Add(light.ToLight());
+        }
         return (scene, Camera.ToCamera());
     }
 
