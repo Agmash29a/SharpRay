@@ -130,7 +130,8 @@ public sealed class Renderer
             Vector3 reflectedLight = Vector3.Reflect(-l, hit.Normal);
             float specular = MathF.Pow(MathF.Max(0, Vector3.Dot(view, reflectedLight)),
                 Math.Clamp(mat.Shininess, 1, 500));
-            direct += (surface * ndotl + new Vector3(specular * 0.4f)) *
+            direct += (surface * ndotl * MathF.Max(0, mat.Kd) +
+                new Vector3(specular * MathF.Max(0, mat.Ks))) *
                 sunlight.Colour * MathF.Max(0, sunlight.Power);
         }
 
