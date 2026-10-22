@@ -295,7 +295,7 @@ public sealed class HistoricalAssetIntegrationTests
     {
         string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
             "..", "..", "..", "..", ".."));
-        return Path.Combine([root, .. parts]);
+        return Path.Combine(new[] { root }.Concat(parts).ToArray());
     }
 
     [Fact]
