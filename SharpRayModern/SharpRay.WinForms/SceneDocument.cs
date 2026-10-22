@@ -66,7 +66,7 @@ public sealed class EditableShape
         return Shape switch
         {
             ShapeKind.Sphere => new Sphere(centre, MathF.Max(0.001f, Radius), material),
-            ShapeKind.Plane => new Plane(centre, Vector3.UnitY, material),
+            ShapeKind.Plane => new SharpRay.Core.Plane(centre, Vector3.UnitY, material),
             ShapeKind.Box => new AxisBox(centre - size * 0.5f, centre + size * 0.5f, material),
             ShapeKind.Triangle => new Triangle(centre,
                 centre + new Vector3(size.X, 0, 0),
