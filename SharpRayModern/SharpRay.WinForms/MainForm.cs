@@ -38,6 +38,20 @@ public sealed class MainForm : Form
         fileMenu.DropDownItems.Add(new ToolStripSeparator());
         fileMenu.DropDownItems.Add("Export PNG...", null, (_, _) => SavePng());
         menu.Items.Add(fileMenu);
+        var presetsMenu = new ToolStripMenuItem("&Legacy scenes");
+        foreach (string name in LegacySceneCatalog.Names)
+        {
+            string selected = name;
+            presetsMenu.DropDownItems.Add(selected, null, (_, _) =>
+            {
+                if (cancellation is not null) return;
+                document = LegacySceneCatalog.Create(selected);
+                RefreshEditor();
+                status.Text = $"Loaded {selected} — press Render";
+                preview.Invalidate();
+            });
+        }
+        menu.Items.Add(presetsMenu);
         MainMenuStrip = menu;
 
         var toolbar = new FlowLayoutPanel
