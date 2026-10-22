@@ -97,7 +97,7 @@ public sealed class Renderer
         Material mat = hit.Material;
         Vector3 surface = mat.Texture?.Sample(hit.TextureContext) ?? mat.Colour;
         surface = Vector3.Max(surface, Vector3.Zero);
-        Vector3 direct = surface * scene.AmbientIntensity;
+        Vector3 direct = surface * scene.AmbientColour * scene.AmbientIntensity * MathF.Max(0, mat.Ka);
         Vector3 view = -ray.Direction;
 
         foreach (PointLight light in scene.Lights)
@@ -115,7 +115,7 @@ public sealed class Renderer
             float specular = MathF.Pow(MathF.Max(0, Vector3.Dot(view, reflectedLight)),
                 Math.Clamp(mat.Shininess, 1, 500));
             float attenuated = MathF.Max(0, light.Power) / (1 + d2 * 0.04f);
-            direct += (surface * ndotl + new Vector3(specular * 0.4f)) *
+            direct += (surface * ndotl * MathF.Max(0, mat.Kd) + new Vector3(specular * MathF.Max(0, mat.Ks))) *
                 light.Colour * attenuated;
         }
 
