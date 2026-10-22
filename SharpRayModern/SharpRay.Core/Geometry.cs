@@ -203,11 +203,14 @@ public sealed record Triangle(Vector3 A, Vector3 B, Vector3 C, Material Material
 }
 
 public sealed record PointLight(Vector3 Position, Vector3 Colour, float Power);
+public sealed record DirectionalLight(Vector3 DirectionToLight, Vector3 Colour, float Power);
 
 public sealed class Scene
 {
     public List<ISceneObject> Objects { get; } = [];
     public List<PointLight> Lights { get; } = [];
+    public List<DirectionalLight> DirectionalLights { get; } = [];
+    public float AmbientIntensity { get; set; } = 0.055f;
     public Vector3 SkyColour { get; set; } = new(0.035f, 0.055f, 0.10f);
 
     // Reference path, useful for testing the BVH against the original linear traversal.
