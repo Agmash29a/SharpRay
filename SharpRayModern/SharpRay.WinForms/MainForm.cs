@@ -7,11 +7,7 @@ namespace SharpRay.WinForms;
 public sealed class MainForm : Form
 {
     private SceneDocument document = SceneDocument.CreateDemo();
-    private readonly PictureBox preview = new()
-    {
-        Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom,
-        BackColor = Color.FromArgb(19, 23, 32)
-    };
+    private readonly SceneViewport preview = new();
     private readonly ListBox objects = new() { Dock = DockStyle.Fill };
     private readonly ListBox lights = new() { Dock = DockStyle.Fill };
     private readonly PropertyGrid inspector = new() { Dock = DockStyle.Fill, HelpVisible = true };
@@ -87,7 +83,24 @@ public sealed class MainForm : Form
         {
             objects.Refresh();
             lights.Refresh();
+            preview.Invalidate();
             status.Text = "Scene modified — press Render to update";
+        };
+        preview.Picked = shape =>
+        {
+            editorTabs.SelectedIndex = 0;
+            objects.SelectedItem = shape;
+        };
+        preview.PositionChanged = () =>
+        {
+            inspector.Refresh();
+            objects.Refresh();
+            status.Text = "Dragging scene object…";
+        };
+        preview.EditFinished = () =>
+        {
+            if (cancellation is null) _ = RenderAsync();
+            else status.Text = "Position updated — render after current render completes";
         };
 
         editorSplit.Panel1.Controls.Add(editorTabs);
@@ -199,11 +212,14 @@ public sealed class MainForm : Form
         lights.EndUpdate();
         if (objects.Items.Count > 0) objects.SelectedIndex = 0;
         if (lights.Items.Count > 0) lights.SelectedIndex = 0;
+        preview.Document = document;
         SetInspectorSelection();
     }
 
     private void SetInspectorSelection()
     {
+        preview.Selection = editorTabs.SelectedIndex == 0 ? objects.SelectedItem as EditableShape : null;
+        preview.Invalidate();
         inspector.SelectedObject = editorTabs.SelectedIndex switch
         {
             0 => objects.SelectedItem,
