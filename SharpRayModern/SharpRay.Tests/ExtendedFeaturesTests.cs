@@ -287,3 +287,38 @@ public sealed class DirectionalLightTests
         Assert.Single(snapshot.DirectionalLights);
     }
 }
+
+
+public sealed class HistoricalAssetIntegrationTests
+{
+    private static string Asset(params string[] parts)
+    {
+        string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
+            "..", "..", "..", "..", ".."));
+        return Path.Combine([root, .. parts]);
+    }
+
+    [Fact]
+    public void OriginalVenusDeMiloTriangleDatasetImportsAndIntersects()
+    {
+        string source = Asset("RayTracer", "Gfx", "PLY", "VenusDeMilo.txt");
+        Assert.True(File.Exists(source), "Expected the original SharpRay historical assets in checkout.");
+        Compound mesh = MeshImporter.Load(source, new Material(Vector3.One));
+        Assert.True(mesh.BoundingBox.Max.Y > mesh.BoundingBox.Min.Y);
+        Assert.True(mesh.BoundingBox.Max.X > mesh.BoundingBox.Min.X);
+        Assert.True(mesh.BoundingBox.Max.Z > mesh.BoundingBox.Min.Z);
+    }
+
+    [Theory]
+    [InlineData("Mercator", "earthmap.bmp")]
+    [InlineData("Ramps", "MarbleRamp.bmp")]
+    public void OriginalSharpRayBitmapFilesImport(string directory, string filename)
+    {
+        string source = Asset("RayTracer", "Gfx", directory, filename);
+        Assert.True(File.Exists(source));
+        ImageTexture bitmap = ImageTexture.FromBmp(source);
+        Assert.True(bitmap.Width > 0 && bitmap.Height > 0);
+        Vector3 pixel = bitmap.Sample(new TextureContext(Vector3.Zero, Vector3.Zero, new Vector2(0.25f)));
+        Assert.True(float.IsFinite(pixel.X) && float.IsFinite(pixel.Y) && float.IsFinite(pixel.Z));
+    }
+}
