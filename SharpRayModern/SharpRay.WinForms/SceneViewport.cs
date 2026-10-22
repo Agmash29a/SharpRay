@@ -9,10 +9,13 @@ namespace SharpRay.WinForms;
 /// Red = world X, green = world Y, blue = world Z. Dragging projects mouse movement
 /// onto the visible axis, while clicking geometry performs an exact ray/object pick.
 /// </summary>
+public enum GizmoMode { Move, Rotate, Scale }
+
 public sealed class SceneViewport : PictureBox
 {
     public SceneDocument? Document { get; set; }
     public EditableShape? Selection { get; set; }
+    public GizmoMode Mode { get; set; } = GizmoMode.Move;
     public Action<EditableShape>? Picked { get; set; }
     public Action? PositionChanged { get; set; }
     public Action? EditFinished { get; set; }
@@ -20,6 +23,8 @@ public sealed class SceneViewport : PictureBox
     private int dragAxis = -1;
     private Point mouseAnchor;
     private Vector3 objectAnchor;
+    private Vector3 rotationAnchor;
+    private Vector3 scaleAnchor;
     private PointF axisBegin, axisEnd;
     private readonly Color[] axisColours = [Color.FromArgb(242, 88, 91),
         Color.FromArgb(94, 226, 141), Color.FromArgb(91, 164, 255)];
@@ -119,6 +124,8 @@ public sealed class SceneViewport : PictureBox
             dragAxis = nearest;
             mouseAnchor = e.Location;
             objectAnchor = new Vector3(Selection.X, Selection.Y, Selection.Z);
+            rotationAnchor = new Vector3(Selection.RotateX, Selection.RotateY, Selection.RotateZ);
+            scaleAnchor = new Vector3(Selection.ScaleX, Selection.ScaleY, Selection.ScaleZ);
             AxisEndpoints(dragAxis, out axisBegin, out axisEnd);
             Capture = true;
             Cursor = Cursors.SizeAll;
@@ -163,9 +170,24 @@ public sealed class SceneViewport : PictureBox
         float amount = GizmoMath.AxisDisplacement(new Vector2(axisBegin.X, axisBegin.Y),
             new Vector2(axisEnd.X, axisEnd.Y), new Vector2(mouseAnchor.X, mouseAnchor.Y),
             new Vector2(e.X, e.Y));
-        Selection.X = objectAnchor.X + (dragAxis == 0 ? amount : 0);
-        Selection.Y = objectAnchor.Y + (dragAxis == 1 ? amount : 0);
-        Selection.Z = objectAnchor.Z + (dragAxis == 2 ? amount : 0);
+        switch (Mode)
+        {
+            case GizmoMode.Move:
+                Selection.X = objectAnchor.X + (dragAxis == 0 ? amount : 0);
+                Selection.Y = objectAnchor.Y + (dragAxis == 1 ? amount : 0);
+                Selection.Z = objectAnchor.Z + (dragAxis == 2 ? amount : 0);
+                break;
+            case GizmoMode.Rotate:
+                Selection.RotateX = rotationAnchor.X + (dragAxis == 0 ? amount * 90 : 0);
+                Selection.RotateY = rotationAnchor.Y + (dragAxis == 1 ? amount * 90 : 0);
+                Selection.RotateZ = rotationAnchor.Z + (dragAxis == 2 ? amount * 90 : 0);
+                break;
+            case GizmoMode.Scale:
+                Selection.ScaleX = MathF.Max(0.01f, scaleAnchor.X + (dragAxis == 0 ? amount : 0));
+                Selection.ScaleY = MathF.Max(0.01f, scaleAnchor.Y + (dragAxis == 1 ? amount : 0));
+                Selection.ScaleZ = MathF.Max(0.01f, scaleAnchor.Z + (dragAxis == 2 ? amount : 0));
+                break;
+        }
         PositionChanged?.Invoke();
         Invalidate();
     }
