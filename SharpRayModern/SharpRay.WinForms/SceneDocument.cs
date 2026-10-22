@@ -6,7 +6,7 @@ using SharpRay.Core;
 
 namespace SharpRay.WinForms;
 
-public enum ShapeKind { Sphere, Plane, Box, Triangle }
+public enum ShapeKind { Sphere, Plane, Box, Triangle, Disc, Cylinder, Torus, Mesh }
 public enum TextureKind { Solid, Checker, Noise, FBm, Turbulence, Marble, Bitmap }
 
 public sealed class EditableShape
@@ -20,6 +20,14 @@ public sealed class EditableShape
     [Category("Geometry")] public float SizeX { get; set; } = 1;
     [Category("Geometry")] public float SizeY { get; set; } = 1;
     [Category("Geometry")] public float SizeZ { get; set; } = 1;
+    [Category("Geometry")] public float MinorRadius { get; set; } = 0.3f;
+    [Category("Geometry")] public string MeshPath { get; set; } = "";
+    [Category("Transform")] public float RotateX { get; set; }
+    [Category("Transform")] public float RotateY { get; set; }
+    [Category("Transform")] public float RotateZ { get; set; }
+    [Category("Transform")] public float ScaleX { get; set; } = 1;
+    [Category("Transform")] public float ScaleY { get; set; } = 1;
+    [Category("Transform")] public float ScaleZ { get; set; } = 1;
 
     [Category("Material")] public string BaseColour { get; set; } = "#D46C3C";
     [Category("Material")] public string AccentColour { get; set; } = "#27364F";
@@ -63,16 +71,32 @@ public sealed class EditableShape
         Material material = new(primary, Math.Clamp(Reflectivity, 0, 1),
             Math.Clamp(Shininess, 1, 500), texture, Math.Clamp(Transparency, 0, 1),
             Math.Clamp(RefractiveIndex, 1.001f, 4));
-        return Shape switch
+        Matrix4x4 rotation = Matrix4x4.CreateFromYawPitchRoll(
+            MathF.PI * RotateY / 180f, MathF.PI * RotateX / 180f, MathF.PI * RotateZ / 180f);
+        if (Shape == ShapeKind.Plane)
+            return new SharpRay.Core.Plane(centre, Vector3.TransformNormal(Vector3.UnitY, rotation), material);
+        IBoundedSceneObject primitive = Shape switch
         {
-            ShapeKind.Sphere => new Sphere(centre, MathF.Max(0.001f, Radius), material),
-            ShapeKind.Plane => new SharpRay.Core.Plane(centre, Vector3.UnitY, material),
-            ShapeKind.Box => new AxisBox(centre - size * 0.5f, centre + size * 0.5f, material),
-            ShapeKind.Triangle => new Triangle(centre,
-                centre + new Vector3(size.X, 0, 0),
-                centre + new Vector3(0, size.Y, 0), material),
+            ShapeKind.Sphere => new Sphere(Vector3.Zero, MathF.Max(0.001f, Radius), material),
+            ShapeKind.Box => new AxisBox(-size * 0.5f, size * 0.5f, material),
+            ShapeKind.Triangle => new Triangle(Vector3.Zero, new Vector3(size.X, 0, 0),
+                new Vector3(0, size.Y, 0), material),
+            ShapeKind.Disc => new Disc(Vector3.Zero, Vector3.UnitY, MathF.Max(0.001f, Radius), material),
+            ShapeKind.Cylinder => new OpenCylinder(Vector3.Zero, MathF.Max(0.001f, Radius),
+                MathF.Max(0.001f, SizeY), material),
+            ShapeKind.Torus => new Torus(Vector3.Zero, MathF.Max(0.001f, Radius),
+                Math.Clamp(MinorRadius, 0.001f, MathF.Max(0.001f, Radius)), material),
+            ShapeKind.Mesh when !string.IsNullOrWhiteSpace(MeshPath) =>
+                MeshImporter.Load(MeshPath, material),
+            ShapeKind.Mesh => throw new InvalidOperationException($"Choose a mesh file for '{Name}'."),
             _ => throw new NotSupportedException($"Unsupported shape: {Shape}")
         };
+        Matrix4x4 transform = Matrix4x4.CreateScale(
+            MathF.Max(0.001f, MathF.Abs(ScaleX)),
+            MathF.Max(0.001f, MathF.Abs(ScaleY)),
+            MathF.Max(0.001f, MathF.Abs(ScaleZ))) *
+            rotation * Matrix4x4.CreateTranslation(centre);
+        return new TransformedObject(primitive, transform);
     }
 }
 
