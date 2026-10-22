@@ -100,6 +100,8 @@ public sealed class CompiledScene
     private readonly BvhNode? bounded;
     private readonly ISceneObject[] unbounded;
     public IReadOnlyList<PointLight> Lights { get; }
+    public IReadOnlyList<DirectionalLight> DirectionalLights { get; }
+    public float AmbientIntensity { get; }
     public Vector3 SkyColour { get; }
 
     public CompiledScene(Scene scene)
@@ -109,6 +111,8 @@ public sealed class CompiledScene
         bounded = BvhNode.Build(objects.OfType<IBoundedSceneObject>().ToArray());
         unbounded = objects.Where(o => o is not IBoundedSceneObject).ToArray();
         Lights = Array.AsReadOnly(scene.Lights.ToArray());
+        DirectionalLights = Array.AsReadOnly(scene.DirectionalLights.ToArray());
+        AmbientIntensity = Math.Clamp(scene.AmbientIntensity, 0f, 1f);
         SkyColour = scene.SkyColour;
     }
 
