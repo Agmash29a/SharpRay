@@ -12,6 +12,7 @@ public sealed class MainForm : Form
     private readonly ListBox lights = new() { Dock = DockStyle.Fill };
     private readonly PropertyGrid inspector = new() { Dock = DockStyle.Fill, HelpVisible = true };
     private readonly TabControl editorTabs = new() { Dock = DockStyle.Fill };
+    private readonly ComboBox gizmoMode = new() { Width = 108, DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly Button renderButton = new() { Text = "Render", Width = 85 };
     private readonly Button cancelButton = new() { Text = "Cancel", Width = 85, Enabled = false };
     private readonly Button exportButton = new() { Text = "Save PNG", Width = 95, Enabled = false };
@@ -51,6 +52,16 @@ public sealed class MainForm : Form
             new Label { Text = "Samples", AutoSize = true, Padding = new Padding(4, 6, 0, 0) }, samplesInput,
             renderButton, cancelButton, exportButton
         ]);
+
+        toolbar.Controls.Add(new Label { Text = "Drag", AutoSize = true, Padding = new Padding(5, 6, 0, 0) });
+        gizmoMode.Items.AddRange(Enum.GetNames<GizmoMode>());
+        gizmoMode.SelectedIndex = 0;
+        gizmoMode.SelectedIndexChanged += (_, _) =>
+        {
+            preview.Mode = Enum.Parse<GizmoMode>(gizmoMode.SelectedItem?.ToString() ?? "Move");
+            preview.Invalidate();
+        };
+        toolbar.Controls.Add(gizmoMode);
 
         var split = new SplitContainer
         {
@@ -205,6 +216,15 @@ public sealed class MainForm : Form
             RefreshEditor();
         };
         buttons.Controls.Add(add);
+        var addSun = new Button { Text = "+ Directional", AutoSize = true };
+        addSun.Click += (_, _) =>
+        {
+            document.Lights.Add(new EditableLight { Name = "Directional", Directional = true,
+                X = 0.4f, Y = 1, Z = 0.5f, Power = 0.8f });
+            RefreshEditor();
+            lights.SelectedIndex = lights.Items.Count - 1;
+        };
+        buttons.Controls.Add(addSun);
         buttons.Controls.Add(remove);
         layout.Controls.Add(lights, 0, 0);
         layout.Controls.Add(buttons, 0, 1);
