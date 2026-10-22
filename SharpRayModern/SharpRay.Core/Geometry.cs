@@ -13,7 +13,10 @@ public readonly record struct Material(
     float Shininess = 48,
     ITexture? Texture = null,
     float Transparency = 0,
-    float RefractiveIndex = 1.5f);
+    float RefractiveIndex = 1.5f,
+    float Ka = 1f,
+    float Kd = 1f,
+    float Ks = 0.4f);
 
 public readonly record struct Hit(float Distance, Vector3 Position, Vector3 Normal, Material Material)
 {
@@ -211,6 +214,7 @@ public sealed class Scene
     public List<PointLight> Lights { get; } = [];
     public List<DirectionalLight> DirectionalLights { get; } = [];
     public float AmbientIntensity { get; set; } = 0.055f;
+    public Vector3 AmbientColour { get; set; } = Vector3.One;
     public Vector3 SkyColour { get; set; } = new(0.035f, 0.055f, 0.10f);
 
     // Reference path, useful for testing the BVH against the original linear traversal.
