@@ -35,6 +35,9 @@ public sealed class EditableShape
     [Category("Material")] public float Transparency { get; set; }
     [Category("Material")] public float RefractiveIndex { get; set; } = 1.5f;
     [Category("Material")] public float Shininess { get; set; } = 48f;
+    [Category("Material")] public float Ka { get; set; } = 1f;
+    [Category("Material")] public float Kd { get; set; } = 1f;
+    [Category("Material")] public float Ks { get; set; } = 0.4f;
 
     [Category("Texture")] public TextureKind Texture { get; set; } = TextureKind.Solid;
     [Category("Texture")] public float Frequency { get; set; } = 2f;
@@ -88,7 +91,8 @@ public sealed class EditableShape
         }
         Material material = new(primary, Math.Clamp(Reflectivity, 0, 1),
             Math.Clamp(Shininess, 1, 500), texture, Math.Clamp(Transparency, 0, 1),
-            Math.Clamp(RefractiveIndex, 1.001f, 4));
+            Math.Clamp(RefractiveIndex, 1.001f, 4),
+            MathF.Max(0, Ka), MathF.Max(0, Kd), MathF.Max(0, Ks));
         Matrix4x4 rotation = Matrix4x4.CreateFromYawPitchRoll(
             MathF.PI * RotateY / 180f, MathF.PI * RotateX / 180f, MathF.PI * RotateZ / 180f);
         if (Shape == ShapeKind.Plane)
@@ -147,10 +151,13 @@ public sealed class CameraSettings
 
 public sealed class SceneDocument
 {
-    public List<EditableShape> Objects { get; set; } = [];
-    public List<EditableLight> Lights { get; set; } = [];
-    public CameraSettings Camera { get; set; } = new();
-    public string SkyColour { get; set; } = "#33435A";
+    [Browsable(false)] public List<EditableShape> Objects { get; set; } = [];
+    [Browsable(false)] public List<EditableLight> Lights { get; set; } = [];
+    [Browsable(false)] public CameraSettings Camera { get; set; } = new();
+    [Category("Environment")] public string SkyColour { get; set; } = "#33435A";
+    [Category("Environment")] public string AmbientColour { get; set; } = "#FFFFFF";
+    [Category("Environment")] public float AmbientIntensity { get; set; } = 0.055f;
+    [Category("Renderer")] public int MaxBounces { get; set; } = 4;
 
     public static SceneDocument CreateDemo() => new()
     {
@@ -182,7 +189,12 @@ public sealed class SceneDocument
 
     public (Scene Scene, Camera Camera) Build()
     {
-        Scene scene = new() { SkyColour = ParseColour(SkyColour) * 0.18f };
+        Scene scene = new()
+        {
+            SkyColour = ParseColour(SkyColour) * 0.18f,
+            AmbientColour = ParseColour(AmbientColour),
+            AmbientIntensity = Math.Clamp(AmbientIntensity, 0f, 1f)
+        };
         foreach (EditableShape obj in Objects)
             scene.Objects.Add(obj.ToGeometry());
         foreach (EditableLight light in Lights)
