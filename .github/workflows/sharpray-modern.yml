@@ -1,0 +1,26 @@
+name: SharpRay Modern - Build and Tests
+
+on:
+  push:
+    branches:
+      - feature/modern-textures-bvh-scene-editor
+    paths:
+      - 'SharpRayModern/**'
+      - '.github/workflows/sharpray-modern.yml'
+  pull_request:
+    paths:
+      - 'SharpRayModern/**'
+      - '.github/workflows/sharpray-modern.yml'
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Windows Forms
+        run: dotnet build SharpRayModern/SharpRay.WinForms/SharpRay.WinForms.csproj --configuration Release
+      - name: Run unit tests
+        run: dotnet test SharpRayModern/SharpRay.Tests/SharpRay.Tests.csproj --configuration Release
